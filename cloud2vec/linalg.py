@@ -7,10 +7,15 @@ from functools import reduce
 def vector_projection(a,b):
 	"""
 	Projects vector a onto vector b.
-	:type a: numpy.ndarray
-	:type b: numpy.ndarray
-	:rtype: numpy.ndarray
+	
+	Parameters
+	----------
+	a : numpy.ndarray
+	
+	b : numpy.ndarray
+
 	"""
+
 	ab_dot_product = np.dot(a,b)
 	b_magnitude = np.linalg.norm(b)
 	projection = ab_dot_product / b_magnitude**2
@@ -18,10 +23,29 @@ def vector_projection(a,b):
 	return projection.real
 		
 def homogenous_solve(M):
+	"""
+	Solve homogeneous linear system by finding the eigenvector associated with the smallest eigenvalue.
+
+
+	Parameters
+	----------
+	
+	M: (M,M) numpy.ndarray
+	
+	"""
 	eigenvalues, eigenvectors = np.linalg.eig(np.dot(M.T,M))
 	return eigenvectors[:, np.argmin(eigenvalues)]
 		
 def step(M):
+	"""
+	Find the normalized basis of given real, (n-1)-dimensional linear subspace and then complement it to a full basis of n by solving a homogeneous linear system. 
+
+	Parameters
+	----------
+	
+	M: (M,M-1) numpy.ndarray
+
+	"""
 	v1 = M[0] / np.linalg.norm(M[0])
 	if len(M) == 1:
 		v2 = np.random.rand(1,len(M[0]))[0]
@@ -49,14 +73,48 @@ def step(M):
 	return new_M
 	
 def vec_dist(basis,vec):
+	"""
+	Find the least-squares solution of basis*x = vec and transpose it.
+
+	Parameters
+	----------
+
+	basis: numpy.ndarray
+	
+	vec: numpy.ndarray
+	
+	"""
+
 	return np.linalg.lstsq(basis.T,vec)[0].T
 	
 def boil(corpus):
+	"""
+	Eliminate lines in 'corpus' matrix that are not linearly independent.
+
+
+	Parameters
+	----------
+
+	corpus: numpy.ndarray
+	
+	"""
+
 	echelon = np.array(sympy.Matrix(corpus).rref()[0]).real.astype('float')
 	idx = [i for i,v in enumerate(echelon) if sum([abs(x) for x in echelon[i]]) != 0]
 	return np.array([v for i,v in enumerate(corpus) if i in idx])
 		
 def corpus_to_base(corpus):
+	"""
+	Given a 'corpus' matrix, find a basis and how many lines are not linearly independent.
+	
+
+	Parameters
+	----------
+	
+	corpus: numpy.ndarray
+	
+	"""
+
 	M = boil(corpus)
 	i = 0
 	while not (lambda m: all(len(row) == len(m) for row in m))(M):
@@ -64,9 +122,21 @@ def corpus_to_base(corpus):
 		i += 1
 	return M, i
 
-def base2vec(model,vec,check=True):
-	end_base = model.wv[vec[0]]
-	for w in vec[1:]:
+def base2vec(model,lst,check=True):
+	"""
+	Convert a word list into a matrix of word embeddings.
+
+	Parameters
+	----------
+
+	model: gensim.models.word2vec.Word2Vec
+
+	
+	vec: list
+	
+	"""
+	end_base = model.wv[lst[0]]
+	for w in lst[1:]:
 		end_base = np.vstack((end_base, model.wv[w]))
 	if check:
 		return corpus_to_base(end_base)
@@ -74,6 +144,21 @@ def base2vec(model,vec,check=True):
 		return end_base, None
 	
 def most_similar(model,base,target,N=1,threshold=False):
+	"""
+	Express a target word in terms of a basis. 
+	
+	Parameters
+	----------
+	
+	base: (M,M) numpy.ndarray
+
+	target: str
+	
+	N: int
+	
+	threshold: int
+	
+	"""
 	base_vector, step = base2vec(model,base)
 	if threshold:
 		assert (step < threshold),"{0} steps to basis in base2vec >= {1} steps allowed".format(step,threshold)
@@ -87,6 +172,12 @@ def most_similar(model,base,target,N=1,threshold=False):
 	return first_base_vector, dist_vector, base_vector
 
 def walk(base_vector):
+	"""
+	Yield all possible subseries for all possible row permutations of base_vector.
+	
+	base_vector: numpy.ndarray 
+
+	"""
 	for i,v in enumerate(list(itertools.permutations(base_vector,len(base_vector)))):
 		word_walk = []
 		for j,w in enumerate(v):
