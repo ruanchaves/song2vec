@@ -38,7 +38,10 @@ def homogenous_solve(M):
 		
 def step(M):
 	"""
-	Find the normalized basis of given real, (n-1)-dimensional linear subspace and then complement it to a full basis of n by solving a homogeneous linear system. 
+	Add a new linearly independent row to matrix M.
+	
+	This is done by finding the normalized basis of given real, (n-1)-dimensional linear subspace and then 
+	complementing it to a full basis of n by solving a homogeneous linear system. 
 
 	Parameters
 	----------
