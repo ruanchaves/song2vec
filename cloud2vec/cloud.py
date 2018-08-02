@@ -1,6 +1,6 @@
 from wordcloud import (WordCloud, get_single_color_func)
 from PIL import Image
-from pwwlinalg import *
+from linalg import *
 from moviepy.editor import ImageSequenceClip
 import matplotlib.pyplot as plt
 import multidict
