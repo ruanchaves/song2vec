@@ -5,6 +5,12 @@ import itertools
 from functools import reduce
 
 def vector_projection(a,b):
+	"""
+	Projects vector a onto vector b.
+	:type a: numpy.ndarray
+	:type b: numpy.ndarray
+	:rtype: numpy.ndarray
+	"""
 	ab_dot_product = np.dot(a,b)
 	b_magnitude = np.linalg.norm(b)
 	projection = ab_dot_product / b_magnitude**2
