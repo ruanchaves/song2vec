@@ -14,6 +14,10 @@ def vector_projection(a,b):
 	
 	b : numpy.ndarray
 
+	Returns
+	-------
+	numpy.ndarray
+
 	"""
 
 	ab_dot_product = np.dot(a,b)
@@ -31,6 +35,10 @@ def homogenous_solve(M):
 	----------
 	
 	M: (M,M) numpy.ndarray
+
+	Returns
+	-------
+	numpy.ndarray
 	
 	"""
 	eigenvalues, eigenvectors = np.linalg.eig(np.dot(M.T,M))
@@ -47,6 +55,11 @@ def step(M):
 	----------
 	
 	M: (M,M-1) numpy.ndarray
+
+
+	Returns
+	-------
+	numpy.ndarray
 
 	"""
 	v1 = M[0] / np.linalg.norm(M[0])
@@ -86,6 +99,10 @@ def vec_dist(basis,vec):
 	
 	vec: numpy.ndarray
 	
+	Returns
+	-------
+	numpy.ndarray
+	
 	"""
 
 	return np.linalg.lstsq(basis.T,vec)[0].T
@@ -99,6 +116,10 @@ def boil(corpus):
 	----------
 
 	corpus: numpy.ndarray
+	
+	Returns
+	-------
+	numpy.ndarray
 	
 	"""
 
@@ -116,6 +137,11 @@ def corpus_to_base(corpus):
 	
 	corpus: numpy.ndarray
 	
+
+	Returns
+	-------
+	(numpy.ndarray, int)
+
 	"""
 
 	M = boil(corpus)
@@ -134,8 +160,19 @@ def base2vec(model,lst,check=True):
 
 	model: gensim.models.word2vec.Word2Vec
 
-	
 	vec: list
+
+	check: bool
+
+
+	Returns
+	-------
+	(numpy.ndarray, int)
+	
+	If the check parameter is True, this function returns the desired matrix and 
+	a count of linearly dependent lines in the initial matrix found after converting the word list into a matrix of word embeddings. 
+
+	If check parameter is False, this function returns the desired matrix and None.
 	
 	"""
 	end_base = model.wv[lst[0]]
@@ -146,22 +183,40 @@ def base2vec(model,lst,check=True):
 	else:
 		return end_base, None
 	
-def most_similar(model,base,target,N=1,threshold=False):
+def most_similar(model,base,target,threshold=False):
 	"""
-	Express a target word in terms of a basis. 
+	Given a 'target' word, try to replace each word in the word list 'base' by a similar word
+	that is in the same context as 'target'.
+	
+	Vectors in 'base' that are not linearly independent will be automatically replaced.
 	
 	Parameters
 	----------
 	
-	base: (M,M) numpy.ndarray
+	base: str
+		Word list.
 
 	target: str
+		Target word.
 	
-	N: int
+	threshold: int, bool
+		Raise an error if the number of linearly dependent lines in 'base' after conversion is more than or equal to threshold.
+		Therefore threshold means the maximum amount of words in 'base' that will be allowed to be replaced by random words.
+		If threshold is False, this function won't check for linearly dependent lines.
+		
 	
-	threshold: int
+	Returns
+	-------
+	(numpy.ndarray, numpy.ndarray, numpy.ndarray)
+
+	The first array is the result of converting the word list into a matrix of word embeddings.
+
+	The third array is a matrix of word embeddings that stand for the target word list.
+	
+	The dot product of the first and the second array will be the third array.
 	
 	"""
+
 	base_vector, step = base2vec(model,base)
 	if threshold:
 		assert (step < threshold),"{0} steps to basis in base2vec >= {1} steps allowed".format(step,threshold)
@@ -178,7 +233,16 @@ def walk(base_vector):
 	"""
 	Yield all possible subseries for all possible row permutations of base_vector.
 	
+
+	Parameters
+	----------
+
 	base_vector: numpy.ndarray 
+
+
+	Yields
+	------
+	numpy.ndarray
 
 	"""
 	for i,v in enumerate(list(itertools.permutations(base_vector,len(base_vector)))):
