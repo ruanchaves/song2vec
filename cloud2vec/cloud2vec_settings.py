@@ -2,7 +2,7 @@ CORPUS_FILE = '/home/ruan/train_triplets.txt'
 
 METADATA_FILE = 'metadata.json'
 
-CHUNK_SIZE = 1024 * 1024 * 128
+CHUNK_SIZE = 1024 * 1024 * 1024
 
 MODEL_FILE = 'word2vec.model'
 MODEL_SIZE = 128

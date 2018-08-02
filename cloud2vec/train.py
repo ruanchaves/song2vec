@@ -63,12 +63,14 @@ def main():
 
 		
 	print('Preprocessing is done. Now training word2vec...')
-	
+
 	try:
 		open(MODEL_FILE,'r').close()
 		model = Word2Vec.load(MODEL_FILE)
 		model.train(corpus,total_examples=len(corpus),total_words=word_counter, epochs=MODEL_EPOCHS)
-	except OSError:
+	except Exception as e:
+		print(e)
+		print('Creating {0}...'.format(MODEL_FILE))
 		path = get_tmpfile(MODEL_FILE)
 		model = Word2Vec(corpus,MODEL_SIZE,MODEL_WINDOW,MODEL_MIN_COUNT,MODEL_WORKERS)
 	model.save(MODEL_FILE)
