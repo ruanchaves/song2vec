@@ -4,7 +4,7 @@ METADATA_FILE = 'metadata.json'
 
 MSD_FOLDER = '/home/ruan/MSD/'
 MSD_CORPUS_FILENAME = 'unique_tracks.txt'
-MSD_BUFFER_SIZE = 10
+MSD_BUFFER_SIZE = 128
 
 CHUNK_SIZE = 1024 * 1024 * 1024
 
@@ -19,3 +19,6 @@ DEFAULT_DICT = {
 		'read_counter' : 0,
 		'MSD' : None
 		}
+
+
+MAX_HEAP_SIZE = 1024

@@ -1,13 +1,12 @@
 import random
-from settings import MODEL_SIZE, MSD_CORPUS_FILENAME, MSD_BUFFER_SIZE, METADATA_FILE, DEFAULT_DICT
+from settings import MODEL_SIZE, MSD_CORPUS_FILENAME, MSD_BUFFER_SIZE, METADATA_FILE, DEFAULT_DICT, MAX_HEAP_SIZE
 import json
 from difflib import SequenceMatcher
 import datetime
 import numpy as np
 import heapq
 import time
-
-MAX_HEAP_SIZE = 1024
+import multiprocessing as mp
 
 def attempt(lst,var_id):
 	try:
@@ -31,29 +30,8 @@ def similarity_query(model,MSD,word,sep='-'):
 	fields = ['artist', 'title']
 	values = []
 
-	start = time.time()
-
-	pairs = list(zip(*list(MSD.items())))
-	MSD_keys = pairs[0]
-	MSD_values = pairs[1]
-	iterator = np.arange(len(MSD_values))
-	
-	for fld in fields:
-		values.append(MSD[word][fld])
-	with open('debug.txt','a') as f:
-		print(values,file=f)
-	for i,v in enumerate(values):
-		recommendation = words_to_id(MSD_keys,MSD_values,iterator,[v])
-		for rec in recommendation:
-			if rec:
-				yield rec
-
-	end = time.time()
-	print(end - start)
-
 	keys = list(MSD.keys())
 	heap = []
-	print('Heap mode')
 	for j,k in enumerate(keys):
 		for i,v in enumerate(fields):
 			try:
@@ -66,7 +44,6 @@ def similarity_query(model,MSD,word,sep='-'):
 					rec = heapq.heappop(heap)
 					yield rec[1]
 
-	print('Random mode')
 	while 1:
 		recommendation = list(model.wv.vocab.keys())	
 		random_rec = random.choice(recommendation)
@@ -103,13 +80,11 @@ def build_MSD(model):
 	for j,k in enumerate(keys):
 		try:
 			word_vector = model_dct[k]
-			print('SUCESS')
 		except:
 			options = similarity_query(model,MSD_dct,k)
 			for o in options:
 				try:
 					word_vector = model_dct[o]
-					print('SUCESS')
 					break
 				except:
 					continue
