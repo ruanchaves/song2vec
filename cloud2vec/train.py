@@ -5,10 +5,9 @@ from gensim.test.utils import get_tmpfile
 from gensim.models import Word2Vec
 import datetime
 import sys
+from settings import DEFAULT_DICT
 
-default_dict = {
-		'read_counter' : 0, 
-		}
+default_dict = DEFAULT_DICT
 
 def main():
 

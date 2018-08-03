@@ -3,6 +3,7 @@ import sympy
 import random
 import itertools
 from functools import reduce
+import MSDtools
 
 def vector_projection(a,b):
 	"""
@@ -175,9 +176,32 @@ def base2vec(model,lst,check=True):
 	If check parameter is False, this function returns the desired matrix and None.
 	
 	"""
-	end_base = model.wv[lst[0]]
+	MSD = MSDtools.check_MSD()
+	end_base = np.array([random.choice(list(model.wv.vectors))])
+	try:
+		end_base = model.wv[lst[0]]
+	except KeyError:
+		options = MSDtools.similarity_query(model,MSD,lst[0])
+		for o in options:
+			try:
+				end_base = model.wv[o]
+				print(end_base)
+				break
+			except:
+				continue
 	for w in lst[1:]:
-		end_base = np.vstack((end_base, model.wv[w]))
+		try:
+			new_vec = model.wv[w]
+		except KeyError:
+			options = MSDtools.similarity_query(model,MSD,w)
+			for o in options:
+				try:
+					new_vec = model.wv[o]
+					print(new_vec)
+					break
+				except:
+					continue
+		end_base = np.vstack((end_base, new_vec))
 	if check:
 		return corpus_to_base(end_base)
 	else:
