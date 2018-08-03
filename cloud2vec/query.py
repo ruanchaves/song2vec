@@ -35,5 +35,3 @@ class Query(object):
 			return basis_words, new_words
 			
 n = Query(['Avril Lavigne','Miley Cyrus'],['Snoop Dogg'])
-x = n('id')
-print(x)

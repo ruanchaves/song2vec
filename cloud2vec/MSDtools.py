@@ -1,7 +1,13 @@
 import random
-from settings import MODEL_SIZE, MSD_CORPUS_FILENAME, METADATA_FILE, DEFAULT_DICT
+from settings import MODEL_SIZE, MSD_CORPUS_FILENAME, MSD_BUFFER_SIZE, METADATA_FILE, DEFAULT_DICT
 import json
-import difflib
+from difflib import SequenceMatcher
+import datetime
+import numpy as np
+import heapq
+import time
+
+MAX_HEAP_SIZE = 1024
 
 def attempt(lst,var_id):
 	try:
@@ -9,40 +15,58 @@ def attempt(lst,var_id):
 	except:
 		return ''
 
-def words_to_id(MSD,lst):
+def words_to_id(keys,values,iterator,lst):
 	id_collection = []
-	pairs = list(zip(*list(MSD.items())))
-	keys = pairs[0]
-	values = pairs[1]
-	for i,v in enumerate(lst):
-		for j,k in enumerate(values):
-			if v.lower() in k.lower():
-				id_collection.append(keys[j])
-		if len(lst) > 1:
-			try:
-				return random.sample(id_collection,MODEL_SIZE)
-			except:
-				random.shuffle(id_collection)
-				return id_collection
-		else:
-			return random.sample(id_collection,1)
+	fields = ['artist','title']
+	for i,v in enumerate(lst):	
+		for f in fields:
+			np.random.shuffle(iterator)
+			for j in iterator:
+				if v.lower() in values[j][f].lower():
+					yield keys[j]
+	yield None
 
+		
 def similarity_query(model,MSD,word,sep='-'):
-	values = MSD[word].split(sep)
+	fields = ['artist', 'title']
+	values = []
+
+	start = time.time()
+
+	pairs = list(zip(*list(MSD.items())))
+	MSD_keys = pairs[0]
+	MSD_values = pairs[1]
+	iterator = np.arange(len(MSD_values))
+	
+	for fld in fields:
+		values.append(MSD[word][fld])
 	with open('debug.txt','a') as f:
 		print(values,file=f)
 	for i,v in enumerate(values):
-		recommendation = words_to_id(MSD,[v])
-		if recommendation:
-			for rec in recommendation:
+		recommendation = words_to_id(MSD_keys,MSD_values,iterator,[v])
+		for rec in recommendation:
+			if rec:
 				yield rec
 
-	for i,v in enumerate(values):
-		recommendation = difflib.get_close_matches(word, list(MSD.keys()))
-		if recommendation:
-			for rec in recommendation:	
-				yield rec
-	
+	end = time.time()
+	print(end - start)
+
+	keys = list(MSD.keys())
+	heap = []
+	print('Heap mode')
+	for j,k in enumerate(keys):
+		for i,v in enumerate(fields):
+			try:
+				ratio = 1 - SequenceMatcher(MSD[word][v],MSD[k][v]).ratio()
+			except:
+				break
+			heapq.heappush(heap,(ratio,k))
+			if len(heap) == MAX_HEAP_SIZE:
+				while heap:
+					rec = heapq.heappop(heap)
+					yield rec[1]
+
+	print('Random mode')
 	while 1:
 		recommendation = list(model.wv.vocab.keys())	
 		random_rec = random.choice(recommendation)
@@ -57,7 +81,7 @@ def build_MSD(model):
 			song_id = attempt(s,1)
 			title = attempt(s,2)
 			artist = attempt(s,3)
-			MSD_dct[song_id] = '{0} - {1}'.format(title,artist)
+			MSD_dct[song_id] = {'title' : title, 'artist' : artist}
 
 	try:
 		with open(METADATA_FILE,'r') as handle:
@@ -70,23 +94,36 @@ def build_MSD(model):
 	keys = pairs[0]
 	values = pairs[1]
 
+
+	model_words = list(model.wv.index2word)
+	model_vectors = list(model.wv.syn0)
+	model_dct = dict(zip(model_words,model_vectors))
+
 	final_dct = {}
 	for j,k in enumerate(keys):
 		try:
-			word_vector = model.wv[k]
-		except KeyError:
+			word_vector = model_dct[k]
+			print('SUCESS')
+		except:
 			options = similarity_query(model,MSD_dct,k)
 			for o in options:
 				try:
-					word_vector = model.wv[o]
+					word_vector = model_dct[o]
+					print('SUCESS')
 					break
 				except:
 					continue
-		word_vector = { 'wv' : word_vector }
 		with open('debug.txt','a') as f:
 			print('1',file=f)
-		final_dct[k] = [values[j], word_vector]
-			
+		final_dct[k] = MSD_dct[k]
+		final_dct[k]['wv'] = word_vector.tolist()
+		final_dct_size = len(final_dct)
+		if not final_dct_size % MSD_BUFFER_SIZE:
+			now = str(datetime.datetime.now())
+			print('Word vectors calculated for {0} songs. Saved to {1} at {2}'.format(final_dct_size,METADATA_FILE,now))
+			D['MSD'] = final_dct
+			with open(METADATA_FILE,'w') as handle:
+				json.dump(D,handle)
 	D['MSD'] = final_dct
 	with open(METADATA_FILE,'w') as handle:
 		json.dump(D,handle)
