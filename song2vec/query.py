@@ -21,7 +21,8 @@ def get_playlist(lst_gen,size=20):
 		print(lst_str)
 		yield "https://www.youtube.com/watch_videos?video_ids={0}".format(lst_str)
 
-def get_walk(model,MSD,api,basis,size=20,walk=2,N=1):
+def get_walk(model,MSD,basis,size=20,walk=2,N=1,api_key=YOUTUBE_API_KEY):
+	api = yapi.YoutubeAPI(api_key)
 	vectors = linalg.walk(basis,n=walk)
 	lst = []
 	for i,v in enumerate(vectors):
@@ -111,8 +112,9 @@ def fill_author(MSD,name,size=MODEL_SIZE):
 			break
 	return lst
 
-def get_more(model,MSD,api,basis):
-	links = [ get_playlist(get_walk(model,MSD,api,basis,walk=i)) for i in range(MODEL_SIZE)  ]
+def get_more(model,MSD,basis,api_key=YOUTUBE_API_KEY):
+	api = yapi.YoutubeAPI(api_key)
+	links = [ get_playlist(get_walk(model,MSD,basis,walk=i)) for i in range(2,MODEL_SIZE)  ]
 	for gen in links:
 		current = next(gen)
 		yield current
@@ -122,6 +124,7 @@ def playlist_from_query(MSD, lst, target, api_key=YOUTUBE_API_KEY):
 	api = yapi.YoutubeAPI(api_key)
 	q = query(MSD,lst,target,api)
 	basis = next(q)
+	yield basis
 	lst = []
 	i = 0
 	for tup,url in q:
@@ -150,9 +153,12 @@ if __name__ == '__main__':
 
 	b = fill_author(MSD,['Pink Floyd'], 1)[0]
 
-	for link in playlist_from_query(MSD,a,b):
+	for idx,link in enumerate( playlist_from_query(MSD,a,b) ):
+		if idx:
+			print(link)
+		else:
+			basis = link
+			break
+
+	for link in get_more(model,MSD,basis):
 		print(link)
-	
-	more = get_playlist(get_walk(model,MSD,api,basis))
-	for link in more:
-		print('more : ',link)
