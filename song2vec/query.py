@@ -16,18 +16,26 @@ def get_url(api,args,N=1,order=None):
 
 def get_playlist(lst_gen,size=20):	
 	for lst in lst_gen:
-		yield "https://www.youtube.com/watch_videos?video_ids={0}".format(','.join(lst[i:i+size]))
+		print(lst)
+		lst_str = ",".join(lst)
+		print(lst_str)
+		yield "https://www.youtube.com/watch_videos?video_ids={0}".format(lst_str)
 
-def get_walk(model,api,basis,size=20):
-	vectors = linalg.walk(basis,n=2)
-	for v in vectors:
-		i = 0
-		lst = []
-		while i < size:
-			song_id = model.wv.similar_by_vector(v,topn=1)[0]
-			lst.append(get_url(api,song_id))
-			i += 1
-		yield lst	
+def get_walk(model,MSD,api,basis,size=20,walk=2,N=1):
+	vectors = linalg.walk(basis,n=walk)
+	lst = []
+	for i,v in enumerate(vectors):
+		song_id = model.wv.similar_by_vector(v,topn=N)[0][0]
+		artist = MSD[song_id]['artist']
+		title = MSD[song_id]['title']
+		data = "{0} {1}".format(artist,title)
+		lst.append(get_url(api,data))
+		print(lst)
+		sys.exit(0)
+		if i and not i % size:
+			result = lst[::]
+			lst = []
+			yield result
 
 def query(MSD,lst,target,api=None):
 	start = {}
@@ -134,6 +142,7 @@ if __name__ == '__main__':
 #			lst.append(url)
 #			if not i % 20:
 #				links = get_playlist(lst)
+#'				lst = []
 #				for link in links:
 #					print(link)
 
