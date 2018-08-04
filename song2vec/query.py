@@ -29,13 +29,10 @@ def get_walk(model,MSD,api,basis,size=20,walk=2,N=1):
 		artist = MSD[song_id]['artist']
 		title = MSD[song_id]['title']
 		data = "{0} {1}".format(artist,title)
-		lst.append(get_url(api,data))
-		print(lst)
-		sys.exit(0)
+		lst.append(get_url(api,data)[0])
 		if i and not i % size:
-			result = lst[::]
+			yield list(set(lst))
 			lst = []
-			yield result
 
 def query(MSD,lst,target,api=None):
 	start = {}
@@ -113,6 +110,29 @@ def fill_author(MSD,name,size=MODEL_SIZE):
 		if len(lst) >= size:
 			break
 	return lst
+
+def get_more(model,MSD,api,basis):
+	links = [ get_playlist(get_walk(model,MSD,api,basis,walk=i)) for i in range(MODEL_SIZE)  ]
+	for gen in links:
+		current = next(gen)
+		yield current
+
+def playlist_from_query(MSD, lst, target, api_key=YOUTUBE_API_KEY):
+
+	api = yapi.YoutubeAPI(api_key)
+	q = query(MSD,lst,target,api)
+	basis = next(q)
+	lst = []
+	i = 0
+	for tup,url in q:
+		i += 1
+		if url:
+			lst.append(url)
+			if not i % 20:
+				links = get_playlist([lst])
+				lst = []
+				for link in links:
+					yield link
 			
 if __name__ == '__main__':
 
@@ -129,24 +149,10 @@ if __name__ == '__main__':
 	a = fill_author(MSD,['Nirvana','Foo Fighters', 'Marigold', 'Sappy'])
 
 	b = fill_author(MSD,['Pink Floyd'], 1)[0]
-	
-	api = yapi.YoutubeAPI(YOUTUBE_API_KEY)
-	
-	h = query(MSD,a,b,api)
-	basis = next(h)
-#	lst = []
-#	i = 0
-#	for tup,url in h:
-#		i += 1
-#		if url:
-#			lst.append(url)
-#			if not i % 20:
-#				links = get_playlist(lst)
-#'				lst = []
-#				for link in links:
-#					print(link)
 
+	for link in playlist_from_query(MSD,a,b):
+		print(link)
 	
-	more = get_playlist(get_walk(model,api,basis))
+	more = get_playlist(get_walk(model,MSD,api,basis))
 	for link in more:
-		print('more',more)
+		print('more : ',link)
