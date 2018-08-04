@@ -23,6 +23,6 @@ DEFAULT_DICT = {
 		'MSD' : None
 		}
 
-
+YOUTUBE_API_KEY = 'AIzaSyBUSXXeNZMRP2fOE80jkLuF7ZB-TsDPcQE'
 MAX_HEAP_SIZE = 1024
 PROCESSOR_CORES = multiprocessing.cpu_count()

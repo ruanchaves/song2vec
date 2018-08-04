@@ -198,7 +198,7 @@ def most_similar(base,target,threshold=False):
 
 	return first_base_vector, dist_vector, base_vector
 
-def walk(base_vector):
+def walk(base_vector,n=2):
 	"""
 	Yield all possible subseries for all possible row permutations of base_vector.
 	
@@ -214,9 +214,7 @@ def walk(base_vector):
 	numpy.ndarray
 
 	"""
-	for i,v in enumerate(list(itertools.permutations(base_vector,len(base_vector)))):
-		word_walk = []
-		for j,w in enumerate(v):
-			word_sum = reduce((lambda x,y: x+y), v[:j+1])
-			word_walk.append(word_sum)
-			yield word_walk
+	generator = itertools.permutations(base_vector, len(base_vector))
+	for g in generator:
+		word_sum = reduce((lambda x,y: x+y), g[0:n])
+		yield word_sum
