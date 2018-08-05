@@ -13,26 +13,16 @@ TELEGRAM_START_MESSAGE = """
 		/rec followed by a comma-separated list of artists.
 	
 	EXAMPLE:
-		/rec Bob Marley, Metallica, Nirvana, Alice In Chains, Iron Maiden
+		/rec Justin Bieber, Metallica, Nirvana, Alice In Chains, Iron Maiden, Megadeth
+
+	TIPS:
+		The first playlist will please people who are granted to be fans of all artists but the first.
+		The second playlist will please people who are granted to be fans of all artists on the list.
 
 	Type /h for more.
 """
 
 TELEGRAM_HELP_MESSAGE = """
-
-	song2vec_bot
-
-	COMMAND SYNTAX:
-		/rec followed by a comma-separated list of artists.
-	
-	EXAMPLE:
-		/rec Bob Marley, Metallica, Nirvana, Alice In Chains, Iron Maiden
-
-	TIPS:
-		Feel free to experiment but better results are expected if all artists after the first are 
-		somewhat related between themselves and if the first artist is somewhat different from all others.
-
-		You can submit up to 128 artists in a single command; all artists after the 128th will be ignored.
 
 	SOURCE CODE:
 		Pull requests are welcome. http://github.com/ruanchaves/song2vec
