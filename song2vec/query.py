@@ -1,6 +1,6 @@
 from gensim.models import Word2Vec
 from multiprocessing import Process, Manager, Pool
-from settings import MODEL_FILE, MSD_METADATA_FILE, MODEL_SIZE, YOUTUBE_API_KEY
+from settings import MODEL_FILE, MSD_METADATA_FILE, MODEL_SIZE, YOUTUBE_API_KEY, WORD2VEC_MODEL, LOWER_BOUND
 import json
 import linalg
 import numpy as np
@@ -9,19 +9,22 @@ import sys
 import heapq
 import yapi
 import re
+from difflib import SequenceMatcher
 
 def get_url(api,args,N=1,order=None):
 	x = api.video_search(args,max_results=N,order=order)
 	return [ v['videoId'] for v in [ vars(z['id']) for z in [ vars(y) for y in vars(x)['items'] ] ] ]
 
-def get_playlist(lst_gen,size=20):	
+def get_playlist(lst_gen,size=20,api=True):	
 	for lst in lst_gen:
-		print(lst)
-		lst_str = ",".join(lst)
-		print(lst_str)
-		yield "https://www.youtube.com/watch_videos?video_ids={0}".format(lst_str)
+		if api:
+			lst_str = ",".join(lst)
+			yield "https://www.youtube.com/watch_videos?video_ids={0}".format(lst_str)
+		else:
+			lst_str = '\n'.join(lst)
+			yield lst_str
 
-def get_walk(model,MSD,basis,size=20,walk=2,N=1,api_key=YOUTUBE_API_KEY):
+def get_walk(model,MSD,basis,size=20,walk=2,N=1,api_key=YOUTUBE_API_KEY,api=True):
 	api = yapi.YoutubeAPI(api_key)
 	vectors = linalg.walk(basis,n=walk)
 	lst = []
@@ -29,13 +32,16 @@ def get_walk(model,MSD,basis,size=20,walk=2,N=1,api_key=YOUTUBE_API_KEY):
 		song_id = model.wv.similar_by_vector(v,topn=N)[0][0]
 		artist = MSD[song_id]['artist']
 		title = MSD[song_id]['title']
-		data = "{0} {1}".format(artist,title)
-		lst.append(get_url(api,data)[0])
+		data = "{0} -- {1}".format(artist,title)
+		if api:
+			lst.append(get_url(api,data)[0])
+		else:
+			lst.append(data)
 		if i and not i % size:
 			yield list(set(lst))
 			lst = []
 
-def query(MSD,lst,target,api=None):
+def query(MSD,lst,target,api=None,model=WORD2VEC_MODEL,api_status=True):
 	start = {}
 	end = {}
 	for idx,item in enumerate(lst):
@@ -55,7 +61,6 @@ def query(MSD,lst,target,api=None):
 		f, d, b = linalg.most_similar(basis,target_word)
 		h = []
 		check = []
-
 		yield b
 
 		for vector in b:
@@ -93,7 +98,10 @@ def query(MSD,lst,target,api=None):
 				for i,v in enumerate(dct['titles']):
 					search_string = '{0} {1}'.format(dct['artist'],v)
 					try:
-						url = get_url(api,search_string)[0]
+						if api_status:
+							url = get_url(api,search_string)[0]
+						else:
+							url = search_string
 					except:
 						url = None
 				yield tup, url
@@ -106,25 +114,29 @@ def fill_author(MSD,name,size=MODEL_SIZE):
 	for i,v in enumerate(keys):
 		artist = MSD[keys[i]]['artist']
 		for j,k in enumerate(name):
-			if k.lower() in artist.lower():
+			if SequenceMatcher(None, k.lower().strip(), artist.lower().strip()).quick_ratio() >= 0.9:
 				lst.append(keys[i])
 		if len(lst) >= size:
 			break
 	return lst
 
-def get_more(model,MSD,basis,api_key=YOUTUBE_API_KEY):
+def get_more(model,MSD,basis,api_key=YOUTUBE_API_KEY,api=True):
 	api = yapi.YoutubeAPI(api_key)
-	links = [ get_playlist(get_walk(model,MSD,basis,walk=i)) for i in range(2,MODEL_SIZE)  ]
+	bound = int(LOWER_BOUND * MODEL_SIZE)
+	links = [ get_playlist(get_walk(model,MSD,basis,walk=i,api=api)) for i in range(bound,MODEL_SIZE)  ]
 	for gen in links:
 		current = next(gen)
 		yield current
 
-def playlist_from_query(MSD, lst, target, api_key=YOUTUBE_API_KEY):
+def playlist_from_query(MSD, lst, target, api_key=YOUTUBE_API_KEY,api_status=True):
 
-	api = yapi.YoutubeAPI(api_key)
-	q = query(MSD,lst,target,api)
+	if api_status:
+		api = yapi.YoutubeAPI(api_key)
+	q = query(MSD,lst,target,api,api_status=api_status)
+	
 	basis = next(q)
 	yield basis
+
 	lst = []
 	i = 0
 	for tup,url in q:
@@ -132,7 +144,10 @@ def playlist_from_query(MSD, lst, target, api_key=YOUTUBE_API_KEY):
 		if url:
 			lst.append(url)
 			if not i % 20:
-				links = get_playlist([lst])
+				if api_status:
+					links = get_playlist([lst])
+				else:
+					links = get_playlist([lst],api=False)
 				lst = []
 				for link in links:
 					yield link
@@ -158,7 +173,7 @@ if __name__ == '__main__':
 			print(link)
 		else:
 			basis = link
-			break
+		#	break
 
 	for link in get_more(model,MSD,basis):
 		print(link)
