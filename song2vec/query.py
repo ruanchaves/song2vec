@@ -37,9 +37,9 @@ def get_playlist(lst_gen,size=20):
 		lst_str = ",".join(lst)
 		yield "https://youtube.com/watch_videos?video_ids={0}".format(lst_str)
 
-def get_walk(model,MSD,basis,size=20,walk=2,N=1,api_key=YOUTUBE_API_KEY):
+def get_walk(model,MSD,basis,size=20,step=2,N=1,api_key=YOUTUBE_API_KEY):
 	api = yapi.YoutubeAPI(api_key)
-	vectors = walk(basis,n=walk)
+	vectors = walk(basis,n=step)
 	lst = []
 	for i,v in enumerate(vectors):
 		song_id = model.wv.similar_by_vector(v,topn=N)[0][0]
@@ -130,7 +130,7 @@ def fill_author(MSD,name,size=MODEL_SIZE):
 def get_more(model,MSD,basis,api_key=YOUTUBE_API_KEY):
 	api = yapi.YoutubeAPI(api_key)
 	bound = int(LOWER_BOUND * MODEL_SIZE)
-	links = [ get_playlist(get_walk(model,MSD,basis,walk=i)) for i in range(bound,MODEL_SIZE)  ]
+	links = [ get_playlist(get_walk(model,MSD,basis,step=i)) for i in range(bound,MODEL_SIZE)  ]
 	for gen in links:
 		current = next(gen)
 		yield current

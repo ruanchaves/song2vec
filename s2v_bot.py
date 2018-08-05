@@ -1,6 +1,6 @@
-from sound2vec.query import fill_author, playlist_from_query, get_more
-from sound2vec.settings import TELEGRAM_API_KEY, TELEGRAM_START_MESSAGE, TELEGRAM_HELP_MESSAGE
-from sound2vec.settings import WORD2VEC_MODEL, MSD
+from song2vec.query import fill_author, playlist_from_query, get_more
+from song2vec.settings import TELEGRAM_API_KEY, TELEGRAM_START_MESSAGE, TELEGRAM_HELP_MESSAGE
+from song2vec.settings import WORD2VEC_MODEL, MSD
 from telegram.ext import CommandHandler, Updater
 import logging
 import re
@@ -17,6 +17,8 @@ def rec(bot, update, args):
 		text = ' '.join(args).split(',')
 		target = [text[0]]
 		home = text[1:128]
+	
+		
 		a = fill_author(MSD,home)
 		b = fill_author(MSD,target, 1)[0]
 	
