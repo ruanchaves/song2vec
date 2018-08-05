@@ -54,9 +54,9 @@ Some tricks I learned along the way:
 * Calling `model.wv[word]` for every word is painfully slow. It's much faster to do...
 
 
-    model_words = list(model.wv.index2word
-    model_vectors = list(model.wv.syn0)
-    model_dct = dict(zip(model_words,model_vectors))
+> model_words = list(model.wv.index2word
+> model_vectors = list(model.wv.syn0)
+> model_dct = dict(zip(model_words,model_vectors))
 	
 ...and call model_dct[word]. It's there [on the source code](https://github.com/RaRe-Technologies/gensim/blob/3b9bb59dac0d55a1cd6ca8f984cead38b9cb0860/gensim/models/word2vec.py#L441).
 
