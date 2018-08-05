@@ -9,12 +9,13 @@ song2vec_bot is a Telegram bot that lives at [http://t.me/song2vec_bot](http://t
  
  Table of Contents
 =================
-   * [Usage]()
+   * [Usage](#usage)
    * [Installation]()
    * [Donate]()
 
  
 # Usage
+[](#usage)
 
 	COMMAND SYNTAX:
 		Simply type /rec followed by a comma-separated list of artists.
