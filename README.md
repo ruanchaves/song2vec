@@ -8,7 +8,7 @@ song2vec_bot is a Telegram bot that lives at [http://t.me/song2vec_bot](http://t
  ![](https://i.imgur.com/jA6D2hB.jpg)
 
 
-# Usage
+# Telegram bot usage
 
 	COMMAND SYNTAX:
  
@@ -27,4 +27,5 @@ song2vec_bot is a Telegram bot that lives at [http://t.me/song2vec_bot](http://t
 
 # Installation
 
-You can run song2vec on your own private server.
+You can run song2vec from your own computer.
+
