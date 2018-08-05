@@ -29,3 +29,5 @@ song2vec_bot is a Telegram bot that lives at [http://t.me/song2vec_bot](http://t
 
 You can run song2vec from your own computer.
 
+	git clone https://github.com/ruanchaves/song2vec.git
+	
