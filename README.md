@@ -8,7 +8,7 @@ song2vec_bot is a Telegram bot that lives at [http://t.me/song2vec_bot](http://t
  Justin Bieber + Backstreet Boys + Ice Cube + Lil Jon = Justin Bieber with rappers.
 
  
-# [Usage](#usage)
+# Usage
 
 	COMMAND SYNTAX:
 		Simply type /rec followed by a comma-separated list of artists.
