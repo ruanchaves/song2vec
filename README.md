@@ -24,3 +24,7 @@ song2vec is a Telegram bot that lives at [http://t.me/song2vec_bot](http://t.me/
 		somewhat related between themselves and if the first artist is somewhat different from all others.
 
 		You can submit up to 128 artists in a single command; all artists after the 128th will be ignored.
+
+# Installation
+
+You can run song2vec on your own private server.
