@@ -17,34 +17,35 @@ def rec(bot, update, args):
 		text = ' '.join(args).split(',')
 		target = [text[0]]
 		home = text[1:128]
-		if target == '!fast':
-			api_status = False
-			target = [text[1]]
-			home = text[2:129]
-		else:
-			api_status = True
 		a = fill_author(MSD,home)
 		b = fill_author(MSD,target, 1)[0]
-	
 	
 		playlist = playlist_from_query(MSD,a,b)
 		basis = next(playlist)
 		msg = next(playlist)
-	
-		parse = re.sub('watch_videos?video_ids=','watch?v=',msg)
-		parse = parse.split(",")
-		bot.send_message(chat_id=update.message.chat_id, text=parse[0])
-		for p in parse[1:]:
-			s = "https://youtube.com/watch?v={0}".format(p)
-			bot.send_message(chat_id=update.message.chat_id, text=s)
-		msg = "PLAYLIST \n \n === \n \n A full playlist of the previous twenty videos follows below. \n \n  {0}".format(msg)
 		bot.send_message(chat_id=update.message.chat_id, text=msg)
 	
 		new_links = get_more(WORD2VEC_MODEL,MSD,basis)
+		links_lst = []
 		for i,v in enumerate(new_links):
-			bot.send_message(chat_id=update.message.chat_id, text=v)
-			if i > 4:
+			try:
+				msg = v.split('=')[1]
+				links_lst.append(msg)
+			except:
+				pass
+			if len(links_lst) >= 20:
 				break
+		links_lst = list(set(links_lst))
+		dct = {}
+		for w in links_lst:
+			dct[w] = 0
+		for w in links_lst:
+			dct[w] += 1
+		links_lst = [ x[0] for x in sorted(list(dct.items()), key=lambda tup: tup[1]) ][::-1]
+		msg = "https://youtube.com/watch_videos?video_ids={0}".format(",".join(links_lst))
+		bot.send_message(chat_id=update.message.chat_id, text=msg)
+
+	
 	except Exception as e:
 		msg = 'Your query was interrupted because of an error: {0}'.format(e)
 		bot.send_message(chat_id=update.message.chat_id, text=msg)

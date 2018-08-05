@@ -5,6 +5,7 @@ from gensim.models import Word2Vec
 CORPUS_FILE = '/home/ruan/train_triplets.txt'
 MODEL_FILE = '/home/ruan/cloud2vec_data/word2vec.model'
 METADATA_FILE = '/home/ruan/cloud2vec_data/metadata.json'
+SEARCH_HISTORY = 'history.json'
 
 MSD_FOLDER = '/home/ruan/MSD/'
 MSD_CORPUS_FILENAME = 'unique_tracks.txt'
@@ -33,11 +34,11 @@ MSD = json.load(open(MSD_METADATA_FILE,'r'))
 
 WORD2VEC_MODEL = Word2Vec.load(MODEL_FILE)
 
-LOWER_BOUND = 0.8
+LOWER_BOUND = 0.95
 
 TELEGRAM_API_KEY = '635288656:AAF_I6W2AAmY8hJzQMdC9tJ2nSsPuSd-vhg'
 TELEGRAM_START_MESSAGE = """
-	I'm the song2vec bot, and I'll recommend you YouTube playlists according to your favorite artists.
+	I'm the song2vec bot, and I'll recommend you two YouTube playlists according to your favorite artists.
 
 	COMMAND SYNTAX:
 		/rec followed by a comma-separated list of artists.

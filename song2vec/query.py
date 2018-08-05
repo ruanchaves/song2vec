@@ -1,6 +1,6 @@
 from gensim.models import Word2Vec
 from multiprocessing import Process, Manager, Pool
-from settings import MODEL_FILE, MSD_METADATA_FILE, MODEL_SIZE, YOUTUBE_API_KEY, WORD2VEC_MODEL, LOWER_BOUND
+from settings import MODEL_FILE, MSD_METADATA_FILE, MODEL_SIZE, YOUTUBE_API_KEY, WORD2VEC_MODEL, LOWER_BOUND, SEARCH_HISTORY
 import json
 import linalg
 import numpy as np
@@ -12,19 +12,31 @@ import re
 from difflib import SequenceMatcher
 
 def get_url(api,args,N=1,order=None):
+	try:
+		open(SEARCH_HISTORY,'r').close()
+	except:
+		open(SEARCH_HISTORY,'w+').close()
+	try:
+		with open(SEARCH_HISTORY,'r') as f:
+			dct = json.load(f)
+	except:
+		dct = {}
+	if dct:
+		q = dct.get( args, 0)
+		if q:
+			return dct[args]
 	x = api.video_search(args,max_results=N,order=order)
-	return [ v['videoId'] for v in [ vars(z['id']) for z in [ vars(y) for y in vars(x)['items'] ] ] ]
+	dct[args] = [ v['videoId'] for v in [ vars(z['id']) for z in [ vars(y) for y in vars(x)['items'] ] ] ]
+	with open(SEARCH_HISTORY,'w') as f:
+		json.dump(dct,f)
+	return dct[args]
 
-def get_playlist(lst_gen,size=20,api=True):	
+def get_playlist(lst_gen,size=20):	
 	for lst in lst_gen:
-		if api:
-			lst_str = ",".join(lst)
-			yield "https://www.youtube.com/watch_videos?video_ids={0}".format(lst_str)
-		else:
-			lst_str = '\n'.join(lst)
-			yield lst_str
+		lst_str = ",".join(lst)
+		yield "https://youtube.com/watch_videos?video_ids={0}".format(lst_str)
 
-def get_walk(model,MSD,basis,size=20,walk=2,N=1,api_key=YOUTUBE_API_KEY,api=True):
+def get_walk(model,MSD,basis,size=20,walk=2,N=1,api_key=YOUTUBE_API_KEY):
 	api = yapi.YoutubeAPI(api_key)
 	vectors = linalg.walk(basis,n=walk)
 	lst = []
@@ -33,15 +45,12 @@ def get_walk(model,MSD,basis,size=20,walk=2,N=1,api_key=YOUTUBE_API_KEY,api=True
 		artist = MSD[song_id]['artist']
 		title = MSD[song_id]['title']
 		data = "{0} -- {1}".format(artist,title)
-		if api:
-			lst.append(get_url(api,data)[0])
-		else:
-			lst.append(data)
+		lst.append(get_url(api,data)[0])
 		if i and not i % size:
 			yield list(set(lst))
 			lst = []
 
-def query(MSD,lst,target,api=None,model=WORD2VEC_MODEL,api_status=True):
+def query(MSD,lst,target,api=None,model=WORD2VEC_MODEL):
 	start = {}
 	end = {}
 	for idx,item in enumerate(lst):
@@ -98,10 +107,7 @@ def query(MSD,lst,target,api=None,model=WORD2VEC_MODEL,api_status=True):
 				for i,v in enumerate(dct['titles']):
 					search_string = '{0} {1}'.format(dct['artist'],v)
 					try:
-						if api_status:
-							url = get_url(api,search_string)[0]
-						else:
-							url = search_string
+						url = get_url(api,search_string)[0]
 					except:
 						url = None
 				yield tup, url
@@ -120,19 +126,18 @@ def fill_author(MSD,name,size=MODEL_SIZE):
 			break
 	return lst
 
-def get_more(model,MSD,basis,api_key=YOUTUBE_API_KEY,api=True):
+def get_more(model,MSD,basis,api_key=YOUTUBE_API_KEY):
 	api = yapi.YoutubeAPI(api_key)
 	bound = int(LOWER_BOUND * MODEL_SIZE)
-	links = [ get_playlist(get_walk(model,MSD,basis,walk=i,api=api)) for i in range(bound,MODEL_SIZE)  ]
+	links = [ get_playlist(get_walk(model,MSD,basis,walk=i)) for i in range(bound,MODEL_SIZE)  ]
 	for gen in links:
 		current = next(gen)
 		yield current
 
-def playlist_from_query(MSD, lst, target, api_key=YOUTUBE_API_KEY,api_status=True):
+def playlist_from_query(MSD, lst, target, api_key=YOUTUBE_API_KEY):
 
-	if api_status:
-		api = yapi.YoutubeAPI(api_key)
-	q = query(MSD,lst,target,api,api_status=api_status)
+	api = yapi.YoutubeAPI(api_key)
+	q = query(MSD,lst,target,api)
 	
 	basis = next(q)
 	yield basis
@@ -144,10 +149,7 @@ def playlist_from_query(MSD, lst, target, api_key=YOUTUBE_API_KEY,api_status=Tru
 		if url:
 			lst.append(url)
 			if not i % 20:
-				if api_status:
-					links = get_playlist([lst])
-				else:
-					links = get_playlist([lst],api=False)
+				links = get_playlist([lst])
 				lst = []
 				for link in links:
 					yield link
