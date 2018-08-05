@@ -41,6 +41,25 @@ Then you can turn on the bot with:
 
 	python3.5 s2v_bot.py
 	
+# Details
+
+Currently the bot takes recommendations from a gensim word2vec model and that's all there's to it.
+
+It's been trained on [The Echo Nest Taste Profile Subset](https://labrosa.ee.columbia.edu/millionsong/tasteprofile) taken from the Million Song Database. The Song IDs were matched to author and title according to [this file](https://labrosa.ee.columbia.edu/millionsong/sites/default/files/AdditionalFiles/unique_tracks.txt).
+
+Some tricks I learned along the way:
+
+* This is not NLP, so we shouldn't use gensim's default parameters. Otherwise [recommendations will get twice as bad](https://arxiv.org/pdf/1804.04212.pdf).
+
+* Calling `model.wv[word]` for every word is painfully slow. It's much faster to do...
+
+
+	model_words = list(model.wv.index2word)
+	model_vectors = list(model.wv.syn0)
+	model_dct = dict(zip(model_words,model_vectors))
+	
+...and call model_dct[word]. It's there [on the source code](https://github.com/RaRe-Technologies/gensim/blob/3b9bb59dac0d55a1cd6ca8f984cead38b9cb0860/gensim/models/word2vec.py#L441).
+
 # Donate
 
 **BTC address:** 32tQxrFSkA8kkyEgq7PSh8AANghn3tfmX9
