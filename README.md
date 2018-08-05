@@ -39,4 +39,4 @@ Then you can turn on the bot with:
 	
 # Donate
 
-BTC address: 32tQxrFSkA8kkyEgq7PSh8AANghn3tfmX9
+**BTC address:** 32tQxrFSkA8kkyEgq7PSh8AANghn3tfmX9
