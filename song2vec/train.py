@@ -50,7 +50,7 @@ def main():
 			i += 1
 			D['read_counter'] = i
 		else:
-			print('Reached end of file.')
+			print('Reached end of file. Delete the file metadata.json to start all over again.')
 			D['read_counter'] = 0
 			handle.seek(0)
 			json.dump(D,handle)

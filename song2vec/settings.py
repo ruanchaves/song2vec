@@ -53,7 +53,8 @@ MSD_METADATA_FILE = 'msd_metadata.json'
 MSD_BUFFER_SIZE = 1024
 MAX_HEAP_SIZE = 1024
 ## The model will be retrained every CHUNK_SIZE bytes in your input data.
-CHUNK_SIZE = 1024 * 1024 * 10
+CHUNK_SIZE = 1024 * 1024 * 1024
+## You may want to experiment with values on the 1024 * 1024 * 16 ~~ 1024 * 1024 * 1024 range.
 
 # How many processor cores you have and/or want this program to utilize.
 PROCESSOR_CORES = multiprocessing.cpu_count()
