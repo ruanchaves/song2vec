@@ -74,5 +74,11 @@ DEFAULT_DICT = {
 		'read_counter' : 0,
 		'MSD' : None
 		}
-MSD = json.load(open(MSD_METADATA_FILE,'r'))
-WORD2VEC_MODEL = Word2Vec.load(MODEL_FILE)
+try:
+	MSD = json.load(open(MSD_METADATA_FILE,'r'))
+except Exception as e:
+	print('settings Exception : ',e)
+try:
+	WORD2VEC_MODEL = Word2Vec.load(MODEL_FILE)
+except Exception as e:
+	print('settings Exception : ',e)
