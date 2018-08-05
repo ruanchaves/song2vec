@@ -4,6 +4,14 @@
 song2vec_bot is a Telegram bot that lives at [http://t.me/song2vec_bot](http://t.me/song2vec_bot).
 
  ![](https://i.imgur.com/lfmGE4A.jpg)
+ 
+# Usage
+
+	COMMAND SYNTAX:
+		Simply type /rec followed by a comma-separated list of artists.
+	
+	EXAMPLE:
+		/rec Metallica, Nirvana, Pink Floyd, Iron Maiden, Ice Cube, Bob Marley, Rolling Stones, U2
 
 # Installation
 
@@ -28,3 +36,7 @@ After that you just have to edit **settings.py** with your Youtube and Telegram 
 Then you can turn on the bot with:
 
 	python3.5 s2v_bot.py
+	
+# Donate
+
+BTC address: 32tQxrFSkA8kkyEgq7PSh8AANghn3tfmX9
