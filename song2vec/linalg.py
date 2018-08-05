@@ -1,9 +1,9 @@
-import numpy as np
-import sympy
-import random
-import itertools
 from functools import reduce
+import itertools
 import MSDtools
+import numpy as np
+import random
+import sympy
 
 def vector_projection(a,b):
 	"""

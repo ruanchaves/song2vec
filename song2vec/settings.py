@@ -1,42 +1,11 @@
-import multiprocessing
-import json
 from gensim.models import Word2Vec
+import json
+import multiprocessing
 
-CORPUS_FILE = '/home/ruan/train_triplets.txt'
-MODEL_FILE = '/home/ruan/cloud2vec_data/word2vec.model'
-METADATA_FILE = '/home/ruan/cloud2vec_data/metadata.json'
-SEARCH_HISTORY = 'history.json'
+# Put below your Youtube and Telegram API keys.
+YOUTUBE_API_KEY = ''
+TELEGRAM_API_KEY = ''
 
-MSD_FOLDER = '/home/ruan/MSD/'
-MSD_CORPUS_FILENAME = 'unique_tracks.txt'
-MSD_BUFFER_SIZE = 1024
-MSD_METADATA_FILE = '/home/ruan/cloud2vec_data/msd_metadata.json'
-
-CHUNK_SIZE = 1024 * 1024 * 10
-
-MODEL_SIZE = 128
-MODEL_WINDOW = 5
-MODEL_MIN_COUNT = 1
-MODEL_WORKERS = 4
-
-MODEL_EPOCHS = 5
-
-DEFAULT_DICT = {
-		'read_counter' : 0,
-		'MSD' : None
-		}
-
-YOUTUBE_API_KEY = 'AIzaSyBUSXXeNZMRP2fOE80jkLuF7ZB-TsDPcQE'
-MAX_HEAP_SIZE = 1024
-PROCESSOR_CORES = multiprocessing.cpu_count()
-
-MSD = json.load(open(MSD_METADATA_FILE,'r'))
-
-WORD2VEC_MODEL = Word2Vec.load(MODEL_FILE)
-
-LOWER_BOUND = 0.95
-
-TELEGRAM_API_KEY = '635288656:AAF_I6W2AAmY8hJzQMdC9tJ2nSsPuSd-vhg'
 TELEGRAM_START_MESSAGE = """
 	I'm the song2vec bot, and I'll recommend you two YouTube playlists according to your favorite artists.
 
@@ -72,3 +41,38 @@ TELEGRAM_HELP_MESSAGE = """
 		This bot utilizes The Echo Nest Taste Profile Subset of the Million Song Dataset as its database.
 		https://labrosa.ee.columbia.edu/millionsong/tasteprofile
 """
+
+# File locations
+CORPUS_FILE = 'train_triplets.txt'
+METADATA_FILE = 'metadata.json'
+SEARCH_HISTORY = 'history.json'
+MSD_CORPUS_FILENAME = 'unique_tracks.txt'
+MSD_METADATA_FILE = 'msd_metadata.json'
+
+# Block sizes for file I/O
+MSD_BUFFER_SIZE = 1024
+MAX_HEAP_SIZE = 1024
+## The model will be retrained every CHUNK_SIZE bytes in your input data.
+CHUNK_SIZE = 1024 * 1024 * 10
+
+# How many processor cores you have and/or want this program to utilize.
+PROCESSOR_CORES = multiprocessing.cpu_count()
+
+
+# The parameters below will be utilized while training the word2vec model.
+MODEL_FILE = 'word2vec.model'
+MODEL_SIZE = 128
+MODEL_WINDOW = 5
+MODEL_MIN_COUNT = 1
+MODEL_WORKERS = 4
+MODEL_EPOCHS = 5
+
+#You can play around with this parameter to improve recommendations. Accepted values are on the (0,1] interval.
+LOWER_BOUND = 0.95
+
+DEFAULT_DICT = {
+		'read_counter' : 0,
+		'MSD' : None
+		}
+MSD = json.load(open(MSD_METADATA_FILE,'r'))
+WORD2VEC_MODEL = Word2Vec.load(MODEL_FILE)

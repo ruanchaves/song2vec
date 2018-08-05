@@ -1,15 +1,15 @@
+from difflib import SequenceMatcher
 from gensim.models import Word2Vec
 from multiprocessing import Process, Manager, Pool
 from settings import MODEL_FILE, MSD_METADATA_FILE, MODEL_SIZE, YOUTUBE_API_KEY, WORD2VEC_MODEL, LOWER_BOUND, SEARCH_HISTORY
+import heapq
 import json
 import linalg
 import numpy as np
 import random
-import sys
-import heapq
-import yapi
 import re
-from difflib import SequenceMatcher
+import sys
+import yapi
 
 def get_url(api,args,N=1,order=None):
 	try:
