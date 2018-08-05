@@ -55,7 +55,7 @@ Some tricks I learned along the way:
 
 * Calling `model.wv[word]` for every word is painfully slow. It's much faster to do...
 
-		model_words = list(model.wv.index2word
+		model_words = list(model.wv.index2word)
 		model_vectors = list(model.wv.syn0)
 		model_dct = dict(zip(model_words,model_vectors))
 	
