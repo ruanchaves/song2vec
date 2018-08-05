@@ -41,9 +41,9 @@ You can run song2vec from your own computer.
 	
 After that you just have to edit **settings.py** with your Youtube and Telegram API keys. If you don't have them yet:
 
-[Get API Key for Youtube](https://www.slickremix.com/docs/get-api-key-for-youtube/)
+* [Get API Key for Youtube](https://www.slickremix.com/docs/get-api-key-for-youtube/)
 
-[Get API Key for Telegram](https://www.sohamkamani.com/blog/2016/09/21/making-a-telegram-bot/) - Simply follow the "Set up your bot" section until you get the API Key ( you won't have to manually set up a bot server ).
+* [Get API Key for Telegram](https://www.sohamkamani.com/blog/2016/09/21/making-a-telegram-bot/) - Simply follow the "Set up your bot" section until you get the API Key ( you won't have to manually set up a bot server ).
 
 Then you can turn on the bot with:
 
