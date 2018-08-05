@@ -36,7 +36,7 @@ You can run song2vec from your own computer.
 	./pip3.5 install datetime gensim numpy python-telegram-bot sympy yapi
 	cd ..
 	git clone https://github.com/ruanchaves/song2vec.git
-	cd ./song2vec
+	cd ./song2vec/song2vec
 	bash install.sh
 	
 After that you just have to edit **settings.py** with your Youtube and Telegram API keys. If you don't have them yet:
