@@ -1,12 +1,10 @@
 from gensim.models import Word2Vec
 from gensim.test.utils import get_tmpfile
-from settings import CHUNK_SIZE
-from settings import DEFAULT_DICT, CORPUS_FILE, METADATA_FILE
-from settings import MODEL_FILE, MODEL_SIZE, MODEL_WINDOW, MODEL_MIN_COUNT, MODEL_WORKERS, MODEL_EPOCHS
+from .settings import CHUNK_SIZE
+from .settings import DEFAULT_DICT, CORPUS_FILE, METADATA_FILE
+from .settings import MODEL_FILE, MODEL_SIZE, MODEL_WINDOW, MODEL_MIN_COUNT, MODEL_WORKERS, MODEL_EPOCHS
 import datetime
 import json
-import sys
-import sys
 
 default_dict = DEFAULT_DICT
 

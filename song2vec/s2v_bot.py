@@ -1,6 +1,6 @@
-from query import fill_author, playlist_from_query, get_more
-from settings import TELEGRAM_API_KEY, TELEGRAM_START_MESSAGE, TELEGRAM_HELP_MESSAGE
-from settings import WORD2VEC_MODEL, MSD
+from .query import fill_author, playlist_from_query, get_more
+from .settings import TELEGRAM_API_KEY, TELEGRAM_START_MESSAGE, TELEGRAM_HELP_MESSAGE
+from .settings import WORD2VEC_MODEL, MSD
 from telegram.ext import CommandHandler, Updater
 import logging
 import re

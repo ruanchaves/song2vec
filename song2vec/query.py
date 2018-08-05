@@ -1,15 +1,16 @@
 from difflib import SequenceMatcher
 from gensim.models import Word2Vec
 from multiprocessing import Process, Manager, Pool
-from settings import MODEL_FILE, MSD_METADATA_FILE, MODEL_SIZE, YOUTUBE_API_KEY, WORD2VEC_MODEL, LOWER_BOUND, SEARCH_HISTORY
+from .settings import MODEL_FILE, MSD_METADATA_FILE, MODEL_SIZE, YOUTUBE_API_KEY, WORD2VEC_MODEL, LOWER_BOUND, SEARCH_HISTORY
 import heapq
 import json
-import linalg
+from .linalg import walk, most_similar
 import numpy as np
 import random
 import re
 import sys
 import yapi
+
 
 def get_url(api,args,N=1,order=None):
 	try:
@@ -38,7 +39,7 @@ def get_playlist(lst_gen,size=20):
 
 def get_walk(model,MSD,basis,size=20,walk=2,N=1,api_key=YOUTUBE_API_KEY):
 	api = yapi.YoutubeAPI(api_key)
-	vectors = linalg.walk(basis,n=walk)
+	vectors = walk(basis,n=walk)
 	lst = []
 	for i,v in enumerate(vectors):
 		song_id = model.wv.similar_by_vector(v,topn=N)[0][0]
@@ -67,7 +68,7 @@ def query(MSD,lst,target,api=None,model=WORD2VEC_MODEL):
 
 		target_word = MSD[target]['wv']
 
-		f, d, b = linalg.most_similar(basis,target_word)
+		f, d, b = most_similar(basis,target_word)
 		h = []
 		check = []
 		yield b

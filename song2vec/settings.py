@@ -78,8 +78,10 @@ DEFAULT_DICT = {
 try:
 	MSD = json.load(open(MSD_METADATA_FILE,'r'))
 except Exception as e:
+	MSD = None
 	print('settings Exception : ',e)
 try:
 	WORD2VEC_MODEL = Word2Vec.load(MODEL_FILE)
 except Exception as e:
+	WORD2VEC_MODEL = None
 	print('settings Exception : ',e)

@@ -1,6 +1,6 @@
 from gensim.models import Word2Vec
 from multiprocessing import Process, Manager, Pool
-from settings import MODEL_FILE, MSD_CORPUS_FILENAME, MSD_METADATA_FILE, PROCESSOR_CORES
+from .settings import MODEL_FILE, MSD_CORPUS_FILENAME, MSD_METADATA_FILE, PROCESSOR_CORES
 import json
 import numpy
 
