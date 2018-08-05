@@ -7,22 +7,13 @@ YOUTUBE_API_KEY = ''
 TELEGRAM_API_KEY = ''
 
 TELEGRAM_START_MESSAGE = """
-	I'm the song2vec bot, and I'll recommend you two YouTube playlists according to your favorite artists.
+	I'm the song2vec bot, and I'll recommend you a YouTube playlist according to your favorite artists.
 
 	COMMAND SYNTAX:
-		/rec followed by a comma-separated list of artists.
+		Simply type /rec followed by a comma-separated list of artists.
 	
 	EXAMPLE:
-		/rec Justin Bieber, Metallica, Nirvana, Alice In Chains, Iron Maiden, Megadeth
-
-	TIPS:
-		The first playlist will please people who are granted to be fans of all artists but the first.
-		The second playlist will please people who are granted to be fans of all artists on the list.
-
-	Type /h for more.
-"""
-
-TELEGRAM_HELP_MESSAGE = """
+		/rec Metallica, Nirvana, Pink Floyd, Iron Maiden, Ice Cube, Bob Marley, Rolling Stones, U2
 
 	SOURCE CODE:
 		Pull requests are welcome. http://github.com/ruanchaves/song2vec
@@ -30,6 +21,9 @@ TELEGRAM_HELP_MESSAGE = """
 	CREDIT:
 		This bot utilizes The Echo Nest Taste Profile Subset of the Million Song Dataset as its database.
 		https://labrosa.ee.columbia.edu/millionsong/tasteprofile
+
+	DONATE:
+		BTC address: 32tQxrFSkA8kkyEgq7PSh8AANghn3tfmX9
 """
 
 # File locations
@@ -43,28 +37,24 @@ MSD_METADATA_FILE = 'msd_metadata.json'
 MSD_BUFFER_SIZE = 1024
 MAX_HEAP_SIZE = 1024
 ## The model will be retrained every CHUNK_SIZE bytes in your input data.
-CHUNK_SIZE = 1024 * 1024 * 1024
-## You may want to experiment with values on the 1024 * 1024 * 16 ~~ 1024 * 1024 * 1024 range.
+CHUNK_SIZE = 1024 * 1024 * 100 
 
 # How many processor cores you have and/or want this program to utilize.
 PROCESSOR_CORES = multiprocessing.cpu_count()
 
 
 # The parameters below will be utilized while training the word2vec model.
+# Default parameters were mostly taken from here https://arxiv.org/pdf/1804.04212.pdf
 MODEL_FILE = 'word2vec.model'
-MODEL_SIZE = 128
-MODEL_WINDOW = 5
-MODEL_MIN_COUNT = 1
-MODEL_WORKERS = 4
-MODEL_EPOCHS = 5
 
-#You can play around with this parameter to improve recommendations. Accepted values are on the (0,1] interval.
-LOWER_BOUND = 0.95
+LOAD_FACTOR = 4
+MODEL_WORKERS = PROCESSOR_CORES * LOAD_FACTOR
+MODEL_SIZE = 100
+MODEL_WINDOW = 3
+MODEL_EPOCHS = 130
 
-DEFAULT_DICT = {
-		'read_counter' : 0,
-		'MSD' : None
-		}
+MODEL_SUBSAMPLE = 1 / (10 ** 5 )
+
 try:
 	MSD = json.load(open(MSD_METADATA_FILE,'r'))
 except Exception as e:

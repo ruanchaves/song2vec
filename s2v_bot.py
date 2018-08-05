@@ -1,50 +1,51 @@
-from song2vec.query import fill_author, playlist_from_query, get_more
-from song2vec.settings import TELEGRAM_API_KEY, TELEGRAM_START_MESSAGE, TELEGRAM_HELP_MESSAGE
-from song2vec.settings import WORD2VEC_MODEL, MSD
+from song2vec.settings import TELEGRAM_API_KEY, YOUTUBE_API_KEY, TELEGRAM_START_MESSAGE
+from song2vec.settings import WORD2VEC_MODEL, MSD,MODEL_SIZE
 from telegram.ext import CommandHandler, Updater
 import logging
 import re
+import yapi
+
+def fill_author(MSD,name,size=20):
+	keys = list(MSD.keys())
+	lst = []
+	for i,v in enumerate(keys):
+		artist = MSD[keys[i]]['artist']
+		for j,k in enumerate(name):
+			if SequenceMatcher(None, k.lower().strip(), artist.lower().strip()).quick_ratio() >= 0.9:
+				lst.append(keys[i])
+		if len(lst) >= size:
+			break
+	return lst
 
 def start(bot,update):
 	bot.send_message(chat_id=update.message.chat_id, text=TELEGRAM_START_MESSAGE)
-
-def h(bot,update):
-	bot.send_message(chat_id=update.message.chat_id, text=TELEGRAM_HELP_MESSAGE)
 
 def rec(bot, update, args):
 	try:
 
 		text = ' '.join(args).split(',')
-		target = [text[0]]
-		home = text[1:128]
-	
+		model = WORD2VEC_MODEL
+		api = yapi.YoutubeAPI(YOUTUBE_API_KEY)			
 		
-		a = fill_author(MSD,home)
-		b = fill_author(MSD,target, 1)[0]
-	
-		playlist = playlist_from_query(MSD,a,b)
-		basis = next(playlist)
-		msg = next(playlist)
-		bot.send_message(chat_id=update.message.chat_id, text=msg)
-	
-		new_links = get_more(WORD2VEC_MODEL,MSD,basis)
-		links_lst = []
-		for i,v in enumerate(new_links):
+		lst = fill_author(MSD,text)
+
+		similar_lst = model.most_similar(positive=lst, topn=20)
+
+		query = []
+		for sim in similar_lst:
+			song_id = sim[0]
+			title, artist = MSD[song_id]['title'], MSD[song_id]['artist']
+			query.append('{0} {1}'.format(title,artist))
+
+		urls = []
+		for q in query:
 			try:
-				msg = v.split('=')[1]
-				links_lst.append(msg)
+				x = api.video_search(q,max_results=1)
+				result = [ v['videoId'] for v in [ vars(z['id']) for z in [ vars(y) for y in vars(x)['items'] ] ] ][0]
+				urls.append(result)
 			except:
 				pass
-			if len(links_lst) >= 20:
-				break
-		links_lst = list(set(links_lst))
-		dct = {}
-		for w in links_lst:
-			dct[w] = 0
-		for w in links_lst:
-			dct[w] += 1
-		links_lst = [ x[0] for x in sorted(list(dct.items()), key=lambda tup: tup[1]) ][::-1]
-		msg = "https://youtube.com/watch_videos?video_ids={0}".format(",".join(links_lst))
+		msg = "https://youtube.com/watch_videos?video_ids={0}".format(",".join(urls))
 		bot.send_message(chat_id=update.message.chat_id, text=msg)
 
 	
@@ -58,10 +59,8 @@ if __name__ == '__main__':
 	dispatcher = updater.dispatcher
 
 	start_handler = CommandHandler('start',start)
-	h_handler = CommandHandler('h',h)
 	rec_handler = CommandHandler('rec',rec,pass_args=True)
 	dispatcher.add_handler(start_handler)
-	dispatcher.add_handler(h_handler)
 	dispatcher.add_handler(rec_handler)
 	
 	updater.start_polling()

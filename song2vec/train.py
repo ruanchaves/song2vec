@@ -2,7 +2,7 @@ from gensim.models import Word2Vec
 from gensim.test.utils import get_tmpfile
 from .settings import CHUNK_SIZE
 from .settings import DEFAULT_DICT, CORPUS_FILE, METADATA_FILE
-from .settings import MODEL_FILE, MODEL_SIZE, MODEL_WINDOW, MODEL_MIN_COUNT, MODEL_WORKERS, MODEL_EPOCHS
+from .settings import MODEL_FILE, MODEL_SIZE, MODEL_WINDOW, MODEL_WORKERS, MODEL_EPOCHS, MODEL_SUBSAMPLE 
 import datetime
 import json
 
@@ -70,9 +70,9 @@ def main():
 		print(e)
 		print('Creating {0}...'.format(MODEL_FILE))
 		path = get_tmpfile(MODEL_FILE)
-		model = Word2Vec(corpus,MODEL_SIZE,MODEL_WINDOW,MODEL_MIN_COUNT,MODEL_WORKERS)
+		model = Word2Vec(corpus,size=MODEL_SIZE,window=MODEL_WINDOW,workers=MODEL_WORKERS,sample=MODEL_SUBSAMPLE)
 	model.save(MODEL_FILE)
-	print('Your model was saved. {0}'.format(str(datetime.datetime.now())))
+	print('Current position : {0} . Your model was saved at {1}'.format(i, str(datetime.datetime.now())))
 
 	return 0
 
