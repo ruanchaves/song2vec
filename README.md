@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="https://i.imgur.com/BXKlnX2.png" alt="Sublime's custom image"/>
+  <img src="https://i.imgur.com/BXKlnX2.png" alt="song2vec"/>
 </p>
-
-![](https://i.imgur.com/BXKlnX2.png)
 
  **[song2vec](http://t.me/song2vec_bot)** is a [Telegram](https://telegram.org/) bot that recommends **songs** through [gensim's](https://radimrehurek.com/gensim/models/word2vec.html) **word2vec** model.
  
