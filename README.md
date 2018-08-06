@@ -39,7 +39,6 @@ Feature requests and bug reports are welcome, please open an issue.
 
 You can run song2vec from your own computer.
 	
-	sudo apt-get install virtualenv
 	virtualenv song2vec_env -p `which python3.5`
 	cd ./song2vec_env/bin
 	source activate
