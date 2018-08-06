@@ -67,7 +67,7 @@ It's been trained on [The Echo Nest Taste Profile Subset](https://labrosa.ee.col
 
 Some tricks I learned along the way:
 
-* This is not NLP, so we shouldn't use gensim's default parameters. Otherwise [recommendations will get twice as bad](https://arxiv.org/pdf/1804.04212.pdf).
+* This is not NLP, so we shouldn't use gensim's default parameters. Otherwise [recommendations will be twice as bad](https://arxiv.org/pdf/1804.04212.pdf).
 
 * Calling `model.wv[word]` for every word is painfully slow. It's much faster to do...
 
