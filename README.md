@@ -1,5 +1,15 @@
-# song2vec
+Table of Contents
+=================
 
+   * [About](#about)
+   * [Usage](#usage)
+   * [Installation](#installation)
+   * [Details](#details)
+   * [Donate](#donate)
+
+
+# About
+[](#about)
 
 song2vec_bot is a Telegram bot that lives at [http://t.me/song2vec_bot](http://t.me/song2vec_bot).
 
@@ -11,7 +21,8 @@ song2vec_bot is a Telegram bot that lives at [http://t.me/song2vec_bot](http://t
 
 Feature requests and bug reports are welcome, please open an issue.
  
-# Usage
+# Usage 
+[](#usage)
 
 	COMMAND SYNTAX:
 		Simply type /rec followed by a comma-separated list of artists.
@@ -20,6 +31,7 @@ Feature requests and bug reports are welcome, please open an issue.
 		/rec Metallica, Nirvana, Pink Floyd, Iron Maiden, Ice Cube, Bob Marley, Rolling Stones, U2
 
 # Installation
+[](#installation)
 
 You can run song2vec from your own computer.
 	
@@ -44,6 +56,7 @@ Then you can turn on the bot with:
 	python3.5 s2v_bot.py
 	
 # Details
+[](#details)
 
 Currently the bot takes recommendations from a gensim word2vec model and that's all there's to it.
 
@@ -62,5 +75,6 @@ Some tricks I learned along the way:
 ...and call model_dct[word]. It's there [on the source code](https://github.com/RaRe-Technologies/gensim/blob/3b9bb59dac0d55a1cd6ca8f984cead38b9cb0860/gensim/models/word2vec.py#L441).
 
 # Donate
+[](#donate)
 
 **BTC address:** 32tQxrFSkA8kkyEgq7PSh8AANghn3tfmX9
