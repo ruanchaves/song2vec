@@ -1,4 +1,4 @@
-![](https://i.imgur.com/mMLctZg.png)
+![](https://i.imgur.com/BXKlnX2.png)
 
 song2vec
 =================
