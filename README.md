@@ -1,15 +1,45 @@
-# song2vec
+![](https://i.imgur.com/BXKlnX2.png)
 
+
+**[song2vec](http://t.me/song2vec_bot)** is a [Telegram](https://telegram.org/) bot that recommends YouTube **songs** through [gensim's](https://radimrehurek.com/gensim/models/word2vec.html) **word2vec** model.
+ 
+[song2vec](http://t.me/song2vec_bot)
+=================
+
+   * [About](#about)
+   * [Usage](#usage)
+   * [Installation](#installation)
+   * [Details](#details)
+   * [TO-DO](#todolist)
+   * [Donate](#donate)
+
+
+# About
+[](#about)
 
 song2vec_bot is a Telegram bot that lives at [http://t.me/song2vec_bot](http://t.me/song2vec_bot).
 
- ![](https://i.imgur.com/lfmGE4A.jpg)
+Feature requests and bug reports are welcome, please open an issue.
+
+ > ![](https://i.imgur.com/VJbm80p.jpg)
+ 
+ 
+ Justin Bieber + Backstreet Boys + Ice Cube + Lil Jon = Justin Bieber with rappers.
+ 
+# Usage 
+[](#usage)
+
+	COMMAND SYNTAX:
+		Simply type /rec followed by a comma-separated list of artists.
+	
+	EXAMPLE:
+		/rec Metallica, Nirvana, Pink Floyd, Iron Maiden, Ice Cube, Bob Marley, Rolling Stones, U2
 
 # Installation
+[](#installation)
 
 You can run song2vec from your own computer.
 	
-	sudo apt-get install virtualenv
 	virtualenv song2vec_env -p `which python3.5`
 	cd ./song2vec_env/bin
 	source activate
@@ -28,3 +58,34 @@ After that you just have to edit **settings.py** with your Youtube and Telegram 
 Then you can turn on the bot with:
 
 	python3.5 s2v_bot.py
+	
+# Details
+[](#details)
+
+Currently the bot takes recommendations from a gensim word2vec model and that's all there's to it.
+
+It's been trained on [The Echo Nest Taste Profile Subset](https://labrosa.ee.columbia.edu/millionsong/tasteprofile) taken from the Million Song Database. The Song IDs were matched to author and title according to [this file](https://labrosa.ee.columbia.edu/millionsong/sites/default/files/AdditionalFiles/unique_tracks.txt).
+
+Some tricks I learned along the way:
+
+* This is not NLP, so we shouldn't use gensim's default parameters. Otherwise [recommendations will be twice as bad](https://arxiv.org/pdf/1804.04212.pdf).
+
+* Calling `model.wv[word]` for every word is painfully slow. It's much faster to do...
+
+		model_words = list(model.wv.index2word)
+		model_vectors = list(model.wv.syn0)
+		model_dct = dict(zip(model_words,model_vectors))
+	
+...and call model_dct[word]. It's there [on the source code](https://github.com/RaRe-Technologies/gensim/blob/3b9bb59dac0d55a1cd6ca8f984cead38b9cb0860/gensim/models/word2vec.py#L441).
+
+# TO-DO
+[](#todolist)
+
+* **train.py** has to be rewritten as parallel code.
+* The model has to be further tested and fine-tuned to the dataset.
+
+
+# Donate
+[](#donate)
+
+**BTC address:** 32tQxrFSkA8kkyEgq7PSh8AANghn3tfmX9
