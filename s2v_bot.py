@@ -1,20 +1,34 @@
 from song2vec.settings import TELEGRAM_API_KEY, YOUTUBE_API_KEY, TELEGRAM_START_MESSAGE
-from song2vec.settings import WORD2VEC_MODEL, MSD,MODEL_SIZE
+from song2vec.settings import WORD2VEC_MODEL, MSD,MODEL_SIZE, SEARCH_HISTORY
 from telegram.ext import CommandHandler, Updater
+from difflib import SequenceMatcher
 import logging
 import re
 import yapi
+import random
+import json
 
-def fill_author(MSD,name,size=20):
+def dct_test(filename):
+	try:
+		return json.load(open(filename,'r'))
+	except:
+		open(filename,'w+').close()
+		return {}
+
+def fill_author(MSD,name,size=20,initial_tolerance=0.9):
 	keys = list(MSD.keys())
 	lst = []
+	random.shuffle(keys)
 	for i,v in enumerate(keys):
 		artist = MSD[keys[i]]['artist']
 		for j,k in enumerate(name):
-			if SequenceMatcher(None, k.lower().strip(), artist.lower().strip()).quick_ratio() >= 0.9:
-				lst.append(keys[i])
-		if len(lst) >= size:
-			break
+			try:
+				if SequenceMatcher(None, k.lower().strip(), artist.lower().strip()).quick_ratio() >= initial_tolerance:
+					lst.append(keys[i])
+			except:
+				pass
+			if len(lst) >= size:
+				break
 	return lst
 
 def start(bot,update):
@@ -22,13 +36,16 @@ def start(bot,update):
 
 def rec(bot, update, args):
 	try:
-
+		history = dct_test(SEARCH_HISTORY)
 		text = ' '.join(args).split(',')
 		model = WORD2VEC_MODEL
 		api = yapi.YoutubeAPI(YOUTUBE_API_KEY)			
 		
 		lst = fill_author(MSD,text)
-
+		print(lst)
+		if not lst:
+			bot.send_message(chat_id=update.message.chat_id, text='Not found.')
+			return
 		similar_lst = model.most_similar(positive=lst, topn=20)
 
 		query = []
@@ -40,13 +57,20 @@ def rec(bot, update, args):
 		urls = []
 		for q in query:
 			try:
-				x = api.video_search(q,max_results=1)
-				result = [ v['videoId'] for v in [ vars(z['id']) for z in [ vars(y) for y in vars(x)['items'] ] ] ][0]
+				status = history.get( q, 0)
+				if status:
+					result = history[q]
+				else:
+					x = api.video_search(q,max_results=1)
+					result = [ v['videoId'] for v in [ vars(z['id']) for z in [ vars(y) for y in vars(x)['items'] ] ] ][0]
 				urls.append(result)
+				history[q] = result
 			except:
 				pass
 		msg = "https://youtube.com/watch_videos?video_ids={0}".format(",".join(urls))
 		bot.send_message(chat_id=update.message.chat_id, text=msg)
+		with open(SEARCH_HISTORY,'w') as f:
+			json.dump(history,f)
 
 	
 	except Exception as e:
