@@ -1,6 +1,6 @@
 ![](https://i.imgur.com/BXKlnX2.png)
 
- **song2vec** is a Telegram bot that recommends **songs** through gensim's **word2vec** model.
+ **song2vec** is a [Telegram](https://telegram.org/) bot that recommends **songs** through [gensim's](https://radimrehurek.com/gensim/models/word2vec.html) **word2vec** model.
  
 song2vec
 =================
