@@ -79,7 +79,7 @@ Some tricks I learned along the way:
 ...and call model_dct[word]. It's there [on the source code](https://github.com/RaRe-Technologies/gensim/blob/3b9bb59dac0d55a1cd6ca8f984cead38b9cb0860/gensim/models/word2vec.py#L441).
 
 # TO-DO
-[]((#todolist)
+[](#todolist)
 
 * **train.py** has to be rewritten as parallel code.
 * The model has to be further tested and fine-tuned to the dataset.
