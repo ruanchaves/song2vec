@@ -44,7 +44,6 @@ PROCESSOR_CORES = multiprocessing.cpu_count()
 
 
 # The parameters below will be utilized while training the word2vec model.
-# Default parameters were mostly taken from here https://arxiv.org/pdf/1804.04212.pdf
 MODEL_FILE = 'word2vec.model'
 
 LOAD_FACTOR = 4
