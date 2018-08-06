@@ -3,8 +3,8 @@ import json
 import multiprocessing
 
 # Put below your Youtube and Telegram API keys.
-YOUTUBE_API_KEY = 'AIzaSyBUSXXeNZMRP2fOE80jkLuF7ZB-TsDPcQE'
-TELEGRAM_API_KEY = '635288656:AAF_I6W2AAmY8hJzQMdC9tJ2nSsPuSd-vhg'
+YOUTUBE_API_KEY = ''
+TELEGRAM_API_KEY = ''
 
 TELEGRAM_START_MESSAGE = """
 	I'm the song2vec bot, and I'll recommend you a YouTube playlist according to your favorite artists.
