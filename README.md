@@ -80,9 +80,3 @@ Some tricks I learned along the way:
 
 * **train.py** has to be rewritten as parallel code.
 * The model has to be further tested and fine-tuned to the dataset.
-
-
-# Donate
-[](#donate)
-
-**BTC address:** 32tQxrFSkA8kkyEgq7PSh8AANghn3tfmX9
