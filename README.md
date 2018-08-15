@@ -1,9 +1,8 @@
 ![](https://i.imgur.com/BXKlnX2.png)
 
 
-**[song2vec](http://t.me/song2vec_bot)** is a [Telegram](https://telegram.org/) bot that recommends YouTube **songs** through [gensim's](https://radimrehurek.com/gensim/models/word2vec.html) **word2vec** model.
+**song2vec** is a [Telegram](https://telegram.org/) bot that recommends YouTube **songs** through [gensim's](https://radimrehurek.com/gensim/models/word2vec.html) **word2vec** model.
  
-[song2vec](http://t.me/song2vec_bot)
 =================
 
    * [About](#about)
@@ -16,8 +15,6 @@
 
 # About
 [](#about)
-
-song2vec_bot is a Telegram bot that lives at [http://t.me/song2vec_bot](http://t.me/song2vec_bot).
 
 Feature requests and bug reports are welcome, please open an issue.
 
